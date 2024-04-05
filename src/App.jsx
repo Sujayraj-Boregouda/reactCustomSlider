@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Data from './components/Data.jsx';
 import Button from './components/Button.jsx';
 import './App.css'
@@ -10,12 +10,27 @@ function App() {
   const imageUrls = Data();
 
   const handlePrevClick = () => {
-    setActiveSliderIndex(activeSlderIndex - 1);
+    setActiveSliderIndex(
+      !activeSlderIndex ? imageUrls.length - 1 : activeSlderIndex -1 
+    );
   }
 
   const handleNextClick = () => {
-    setActiveSliderIndex(activeSlderIndex + 1);
+    setActiveSliderIndex(
+      (activeSlderIndex + 1) % imageUrls.length
+    );
   }
+
+ useEffect(() => {
+  const TIMER = setTimeout(() => {
+    handleNextClick();
+  }, 3000)
+
+  return () => {
+    clearTimeout(TIMER);
+  }
+ }, [activeSlderIndex])
+ 
 
   return (
     <>
@@ -23,7 +38,7 @@ function App() {
         <div className='flex justify-center'>
           <Button className="prev" onClick={handlePrevClick}>Previous</Button>
           {imageUrls.map((url, i) => (
-            <img key={url} src={url} alt="" className={"w-[700px] h-[500px] object-contain " + (activeSlderIndex === i ? "block" : "hidden")}/>
+            <img key={url} src={url} alt={`image ${i + 1}`} className={"w-[700px] h-[500px] object-contain " + (activeSlderIndex === i ? "block" : "hidden")}/>
           ))}
           <Button className="next" onClick={handleNextClick}>Next</Button>
         </div>
